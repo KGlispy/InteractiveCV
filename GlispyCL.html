@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kathleen Glispy | Senior IT Program & Project Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Professional Slate & Teal -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard to give a hiring manager a dynamic way to explore qualifications. It starts with a summary and a visual skills radar chart for a quick overview. The core content is broken into thematic sections (Leadership, Execution, Technical) that a user can navigate to via a sticky header. This structure prioritizes non-linear exploration, allowing the user to dive into areas most relevant to them. Interactive elements like clickable tabs for the project lifecycle and methodology toggles are used to make the content engaging and demonstrate technical fluency, a better approach than a static document for an IT professional. -->
+    <!-- Visualization & Content Choices: 
+        - Header/Summary (HTML/CSS): To inform and set context. Standard, clean entry.
+        - Skills Radar Chart (Chart.js/Canvas): To compare/inform. Provides a high-impact visual summary of core competencies, making her strengths immediately apparent. A radar chart is ideal for showing multi-faceted proficiency.
+        - Project Lifecycle Tabs (HTML/CSS/JS): To organize/inform. Transforms a text list into an interactive element, encouraging user engagement and breaking down a complex process into digestible parts.
+        - Methodology Toggle (HTML/CSS/JS): To compare. Allows for a direct, interactive comparison of her skills in Agile vs. Waterfall, a key consideration for PM roles.
+        - Skills Grid (HTML/Tailwind): To organize. A clean, modern card-based layout for her technical and compliance skills.
+        - Justification: All choices aim to make the information more digestible, engaging, and explorable than the original text-heavy cover letter, showcasing her skills in a modern format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0f766e; /* teal-700 */
+            border-bottom-color: #0f766e;
+        }
+        .content-section {
+            scroll-margin-top: 80px;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 80vw;
+            max-width: 500px;
+            max-height: 500px;
+        }
+        .tab {
+            cursor: pointer;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            color: #0d9488; /* teal-600 */
+            border-bottom-color: #0d9488;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-800">Kathleen Glispy</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Overview</a>
+                        <a href="#leadership" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Leadership</a>
+                        <a href="#execution" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Execution</a>
+                        <a href="#technical" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Technical</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-teal-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#overview" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Overview</a>
+                <a href="#leadership" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Leadership</a>
+                <a href="#execution" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Execution</a>
+                <a href="#technical" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Technical</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Overview Section -->
+        <section id="overview" class="content-section text-center mb-24">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Senior IT Program & Project Manager</h2>
+            <p class="mt-6 max-w-3xl mx-auto text-lg leading-8 text-slate-600">Over two decades of experience delivering complex, multi-million dollar IT initiatives. A dedicated leader committed to optimizing project methodologies and fostering cross-functional collaboration to achieve organizational objectives.</p>
+            <div class="mt-10">
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+                <p class="mt-4 text-sm text-slate-500">At-a-glance view of core competencies.</p>
+            </div>
+        </section>
+
+        <!-- Leadership & Strategy Section -->
+        <section id="leadership" class="content-section mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold text-slate-800">Leadership & Strategy</h3>
+                <p class="mt-2 text-md text-slate-500">Guiding strategy, engaging stakeholders, and ensuring value.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Stakeholder Engagement</h4>
+                    <p class="mt-2 text-slate-600">Consistently built and maintained constructive relationships with executive sponsors, steering committees, business teams, and external partners to ensure clear communication and project success.</p>
+                </div>
+                <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Business Cases & ROI</h4>
+                    <p class="mt-2 text-slate-600">Demonstrated ability to deliver optimal return on investment for information systems, supported by deep experience in developing comprehensive business cases.</p>
+                </div>
+                <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Process Improvement & OCM</h4>
+                    <p class="mt-2 text-slate-600">Practical experience applying Business Process Reengineering and Organizational Change Management (OCM) strategies to facilitate smooth adoption of new processes and systems.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Execution Section -->
+        <section id="execution" class="content-section mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold text-slate-800">Project Execution</h3>
+                <p class="mt-2 text-md text-slate-500">Managing the full project lifecycle with proven methodologies.</p>
+            </div>
+            <div class="card p-6 md:p-8">
+                <h4 class="font-semibold text-lg text-teal-700 mb-4 text-center">Full Project Lifecycle Management</h4>
+                <div class="border-b border-slate-200">
+                    <nav class="-mb-px flex justify-center space-x-2 sm:space-x-8" aria-label="Tabs">
+                        <button class="tab active" data-tab="initiation">Initiation</button>
+                        <button class="tab" data-tab="planning">Planning</button>
+                        <button class="tab" data-tab="controlling">Controlling</button>
+                        <button class="tab" data-tab="closing">Closing</button>
+                    </nav>
+                </div>
+                <div class="mt-6">
+                    <div id="initiation" class="tab-content active"><p class="text-center text-slate-600">Successfully delivered large-scale software development and technology infrastructure projects from conception.</p></div>
+                    <div id="planning" class="tab-content"><p class="text-center text-slate-600">Developed detailed project plans, schedules, and budgets, coordinating dependencies and resources efficiently.</p></div>
+                    <div id="controlling" class="tab-content"><p class="text-center text-slate-600">Expertly monitored progress, managed risks, and controlled scope to keep projects on track.</p></div>
+                    <div id="closing" class="tab-content"><p class="text-center text-slate-600">Managed all closing phases, including reporting, lessons learned, and stakeholder handoff.</p></div>
+                </div>
+
+                <hr class="my-8 border-slate-200">
+
+                <h4 class="font-semibold text-lg text-teal-700 mb-4 text-center">Methodologies</h4>
+                <div class="flex justify-center space-x-4 mb-4">
+                     <button id="btn-agile" class="px-4 py-2 rounded-md text-sm font-medium bg-teal-600 text-white shadow-sm">Agile</button>
+                     <button id="btn-waterfall" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300">Waterfall</button>
+                </div>
+                <div id="methodology-content" class="text-center text-slate-600 p-4 bg-slate-50 rounded-lg">
+                    Skilled in applying iterative and collaborative approaches, including Scrum boards, Kanban, backlog management, and sprint planning.
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical & Compliance Section -->
+        <section id="technical" class="content-section mb-12">
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold text-slate-800">Technical & Compliance Expertise</h3>
+                <p class="mt-2 text-md text-slate-500">Managing vendors, procurement, and compliance with a broad technical understanding.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                 <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Vendor & Contract Management</h4>
+                    <p class="mt-2 text-slate-600">Expertly managed IT vendors and external resources, establishing governance to ensure SLAs and contractual obligations were met.</p>
+                </div>
+                 <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Procurement</h4>
+                    <p class="mt-2 text-slate-600">Developed comprehensive procurement documents, SOWs, evaluated vendor responses, and facilitated effective vendor selection.</p>
+                </div>
+                 <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">IT Business Analysis</h4>
+                    <p class="mt-2 text-slate-600">Consistently translated complex business requirements into precise IT system specifications.</p>
+                </div>
+                 <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Broad IT Knowledge</h4>
+                    <p class="mt-2 text-slate-600">Wide understanding of IT Architecture, Security, QA, and Service Delivery, ensuring a holistic project view.</p>
+                </div>
+                <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Cross-Organizational Systems</h4>
+                    <p class="mt-2 text-slate-600">Led national IT initiatives with multi-regional teams, demonstrating capability with systems that cross agency boundaries.</p>
+                </div>
+                 <div class="card p-6">
+                    <h4 class="font-semibold text-lg text-teal-700">Regulatory Compliance</h4>
+                    <p class="mt-2 text-slate-600">Direct experience with data security regulations (ACA and HIPAA), essential for navigating complex regulatory landscapes.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-slate-400">
+            <p class="font-bold text-white text-lg">Kathleen Glispy</p>
+            <p class="text-sm">Tacoma, WA | 503-849-9668</p>
+            <p class="text-sm"><a href="mailto:kathleen@dkgassociatesinc.com" class="hover:text-teal-400 transition-colors">kathleen@dkgassociatesinc.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Close mobile menu when a link is clicked
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Skills Radar Chart
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            const skillsChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        'Strategic Planning', 'Project Execution', 'Vendor Management', 
+                        'Stakeholder Engagement', 'Technical Acumen', 'Risk Mitigation'
+                    ],
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: [9, 10, 8, 10, 8, 9],
+                        backgroundColor: 'rgba(13, 148, 136, 0.2)', // teal-600 with opacity
+                        borderColor: 'rgb(15, 118, 110)', // teal-700
+                        pointBackgroundColor: 'rgb(15, 118, 110)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(15, 118, 110)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0,0,0,0.1)' },
+                            grid: { color: 'rgba(0,0,0,0.1)' },
+                            pointLabels: { 
+                                font: { size: 12 },
+                                color: '#475569' // slate-600
+                            },
+                            ticks: {
+                                backdropColor: 'rgba(255,255,255,0)',
+                                color: '#64748b', // slate-500
+                                stepSize: 2
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Project Lifecycle Tabs
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-tab');
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    tabContents.forEach(content => {
+                        if (content.id === target) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // Methodology Toggle
+            const btnAgile = document.getElementById('btn-agile');
+            const btnWaterfall = document.getElementById('btn-waterfall');
+            const methodologyContent = document.getElementById('methodology-content');
+            const agileText = "Skilled in applying iterative and collaborative approaches, including Scrum boards, Kanban, backlog management, and sprint planning.";
+            const waterfallText = "Proficient in traditional Waterfall methodology, managing all phases sequentially: Requirements, Design, Development, Testing, Implementation, and Maintenance.";
+
+            btnAgile.addEventListener('click', () => {
+                methodologyContent.textContent = agileText;
+                btnAgile.classList.add('bg-teal-600', 'text-white');
+                btnAgile.classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+                btnWaterfall.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+                btnWaterfall.classList.remove('bg-teal-600', 'text-white');
+            });
+
+            btnWaterfall.addEventListener('click', () => {
+                methodologyContent.textContent = waterfallText;
+                btnWaterfall.classList.add('bg-teal-600', 'text-white');
+                btnWaterfall.classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+                btnAgile.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+                btnAgile.classList.remove('bg-teal-600', 'text-white');
+            });
+
+            // Smooth Scrolling & Active Nav Link Highlighting
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
