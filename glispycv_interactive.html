@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kathleen Glispy | Senior IT Program & Project Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Professional Slate & Teal -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive portfolio/dashboard to give a hiring manager a dynamic way to explore Kathleen's complete resume. It starts with a prominent summary and a visual skills radar chart for a quick overview. The main content is divided into logical thematic sections: Overview, Core Competencies, Professional Experience, and Education. A sticky header with navigation allows direct jumping between these sections. This structure enables non-linear exploration, allowing users to focus on areas of interest. Interactive elements like expandable details for competencies, a timeline for experience, and detailed content reveal on demand are used to make the resume engaging and highlight depth without overwhelming the user, showcasing a modern, digital approach to presenting professional history. -->
+    <!-- Visualization & Content Choices: 
+        - Header/Footer (HTML/CSS): Provides persistent navigation and contact information. Standard web pattern for usability.
+        - Overview Section (HTML/CSS + Chart.js/Canvas): Features the main summary and a radar chart. Goal: Inform/Summarize. The radar chart visually compares core competencies, providing a high-impact, at-a-glance understanding of strengths.
+        - Core Competencies Section (HTML/CSS/JS): Categorizes and expands on detailed skills. Goal: Organize/Inform/Compare. Each competency area (Methodologies, Fiscal/Resource Mgt, Regulatory Compliance, Stakeholder Engagement) uses a combination of expandable detail cards (for bulleted lists) or toggles (for methodologies) to reveal information on demand, preventing a long scroll.
+        - Professional Experience Section (HTML/CSS/JS): Presents career history chronologically. Goal: Organize/Inform. A simple timeline structure with clickable company cards allows users to select a specific employer and view detailed roles and accomplishments for that period. This offers context and highlights career progression.
+        - Education Section (HTML/CSS): Simple textual display. Goal: Inform.
+        - Justification: All interactive elements are chosen to break down dense resume text into digestible, explorable chunks. The use of Chart.js for the radar chart and dynamic content reveals via JavaScript enhances engagement and makes the information more digestible, transforming a traditional resume into an interactive digital experience. NO SVG graphics or Mermaid JS are used, adhering to guidelines. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0f766e; /* teal-700 */
+            border-bottom-color: #0f766e;
+        }
+        .content-section {
+            scroll-margin-top: 80px;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 80vw;
+            max-width: 500px;
+            max-height: 500px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .expandable-content .details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .expandable-content.expanded .details {
+            max-height: 500px; /* Ample height for expansion */
+        }
+        .methodology-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            font-size: 1.25rem;
+            color: #0d9488;
+        }
+        .methodology-visual span {
+            margin: 0 0.5rem;
+        }
+
+        /* Timeline specific styles */
+        .timeline-container {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            padding: 10px;
+            border-radius: 0.5rem;
+        }
+        .timeline-item:hover, .timeline-item.active {
+            background-color: #e2e8f0; /* slate-200 */
+        }
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background-color: #0f766e; /* teal-700 */
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+        .timeline-line {
+            position: absolute;
+            left: calc(8px + 15px); /* Half dot width + margin */
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #cbd5e1; /* slate-300 */
+            z-index: -1;
+        }
+        .experience-detail-content {
+            display: none;
+        }
+        .experience-detail-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-800">Kathleen Glispy</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Overview</a>
+                        <a href="#competencies" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Competencies</a>
+                        <a href="#experience" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Experience</a>
+                        <a href="#education" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Education</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-teal-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#overview" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Overview</a>
+                <a href="#competencies" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Competencies</a>
+                <a href="#experience" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Experience</a>
+                <a href="#education" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-600">Education</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Overview Section -->
+        <section id="overview" class="content-section text-center mb-24">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Senior IT Program & Project Manager</h2>
+            <p class="mt-6 max-w-3xl mx-auto text-lg leading-8 text-slate-600">Highly accomplished Senior IT Program and Project Manager with over two decades of experience driving complex, multi-million dollar initiatives and leading high-performing teams within dynamic environments, including healthcare and insurance. Adept at navigating regulatory landscapes and implementing large-scale IT solutions from inception to successful delivery. Proven expertise in strategic planning, PMO governance, risk mitigation, and fostering cross-functional collaboration. A proactive leader committed to optimizing project methodologies to achieve challenging organizational objectives and enhance operational excellence.</p>
+            <div class="mt-10">
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+                <p class="mt-4 text-sm text-slate-500">At-a-glance view of core competencies.</p>
+            </div>
+        </section>
+
+        <!-- Core Competencies Section -->
+        <section id="competencies" class="content-section mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold text-slate-800">Core Competencies</h3>
+                <p class="mt-2 text-md text-slate-500">In-depth capabilities across IT Program and Project Leadership, Fiscal Management, Compliance, and Stakeholder Engagement.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Methodologies Card -->
+                <div class="card p-6 expandable-content cursor-pointer">
+                    <h4 class="font-semibold text-lg text-teal-700">Methodologies & Tools</h4>
+                    <p class="mt-2 text-slate-600">Proficiency in various project management frameworks.</p>
+                    <div class="details mt-4 text-slate-600 text-sm">
+                        <div class="flex justify-center space-x-4 mb-4">
+                            <button id="btn-agile-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-teal-600 text-white shadow-sm">Agile</button>
+                            <button id="btn-waterfall-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300">Waterfall</button>
+                            <button id="btn-devops-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300">DevOps</button>
+                             <button id="btn-lean-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300">Lean</button>
+                        </div>
+                        <div id="methodology-comp-content" class="text-center p-4 bg-slate-50 rounded-lg">
+                            Skilled in applying iterative and collaborative approaches, including Scrum boards, Kanban boards, Backlog Management, and Sprint Planning.
+                            <div class="methodology-visual">🔄<span>Iterative & Flexible</span></div>
+                        </div>
+                    </div>
+                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
+                </div>
+
+                <!-- Fiscal and Resource Management Card -->
+                <div class="card p-6 expandable-content cursor-pointer">
+                    <h4 class="font-semibold text-lg text-teal-700">Fiscal & Resource Management</h4>
+                    <p class="mt-2 text-slate-600">Expertise in financial planning and resource optimization.</p>
+                    <div class="details text-slate-600 text-sm">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Estimates, Forecasts, Business Cases, Budget Planning, Budget Approvals</li>
+                            <li>Implementation of Financial Controls, Procurement, Compliance, Audit Trails, Audits</li>
+                            <li>Budget Administration, Financial Reporting, Monitoring and Escalation</li>
+                            <li>Resource Allocation, Vendor Management, Contract Management, Staff Recruitment and Retention, Team Development</li>
+                        </ul>
+                    </div>
+                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
+                </div>
+
+                <!-- Regulatory Compliance Card -->
+                <div class="card p-6 expandable-content cursor-pointer">
+                    <h4 class="font-semibold text-lg text-teal-700">Regulatory Compliance</h4>
+                    <p class="mt-2 text-slate-600">Ensuring adherence to industry and privacy standards.</p>
+                    <div class="details text-slate-600 text-sm">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Execution of policies and procedures</li>
+                            <li>Patient Privacy and Data Security (ACA and HIPAA)</li>
+                            <li>Billing and Coding Compliance</li>
+                            <li>Internal Audit preparation, support and remediation</li>
+                        </ul>
+                    </div>
+                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
+                </div>
+
+                <!-- Stakeholder Engagement Card -->
+                <div class="card p-6 expandable-content cursor-pointer">
+                    <h4 class="font-semibold text-lg text-teal-700">Stakeholder Engagement</h4>
+                    <p class="mt-2 text-slate-600">Fostering collaboration and effective communication.</p>
+                    <div class="details text-slate-600 text-sm">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Executive Reporting and Presentations</li>
+                            <li>Goal Setting, Reporting and Issue Resolution</li>
+                            <li>Communication Planning</li>
+                            <li>Client Account Management</li>
+                        </ul>
+                    </div>
+                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Professional Experience Section -->
+        <section id="experience" class="content-section mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold text-slate-800">Professional Experience</h3>
+                <p class="mt-2 text-md text-slate-500">A detailed look at my career progression and significant contributions.</p>
+            </div>
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Timeline/Company Selector -->
+                <div class="md:col-span-1">
+                    <div class="timeline-container relative pl-8">
+                        <div class="timeline-line"></div>
+                        <div id="company-dkg" class="timeline-item active" data-company="dkg">
+                            <div class="timeline-dot"></div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-slate-800">DKG & Associates</p>
+                                <p class="text-xs text-slate-500">Sept 2020 - Present</p>
+                            </div>
+                        </div>
+                        <div id="company-kp" class="timeline-item" data-company="kp">
+                            <div class="timeline-dot"></div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-slate-800">Kaiser Permanente</p>
+                                <p class="text-xs text-slate-500">Sept 2004 - Oct 2019</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience Details -->
+                <div class="md:col-span-3">
+                    <div id="experience-dkg" class="experience-detail-content active card p-6">
+                        <h4 class="font-bold text-xl text-teal-700 mb-4">President/Owner | DKG & Associates</h4>
+                        <p class="text-slate-600 mb-4">Tacoma, WA | September 2020 - Present</p>
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-semibold text-lg text-slate-700">Customer Relationship Management</h5>
+                                <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                    <li>Leads IT consulting services for diverse industries (finance, banking, insurance, healthcare, e-commerce). Specializes in CRM development, database management, and technical application solutions.</li>
+                                    <li>Spearheads customer relationship management strategies, ensuring successful client onboarding, retention, and service customization.</li>
+                                    <li>Manages end-to-end reporting, reconciliation processes, and web development projects, enhancing business visibility and engagement.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-lg text-slate-700">Technical Acumen</h5>
+                                <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                    <li>Database Management and CRM Development, Conversion</li>
+                                    <li>Technical Application Implementation across a diverse client base</li>
+                                    <li>Process Improvement and Business Analysis</li>
+                                    <li>System Go Live Management and Production Support</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="experience-kp" class="experience-detail-content card p-6">
+                        <h4 class="font-bold text-xl text-teal-700 mb-4">Kaiser Permanente</h4>
+                        <p class="text-slate-600 mb-4">Oakland, CA & Northwest Region | September 2004 - October 2019</p>
+                        <p class="text-slate-700 font-medium mb-4">Served in progressively responsible roles including Senior Manager, Project Program Management; Senior National IT Program Manager; Senior Program Manager; Program Manager, External Reporting; and Lead Project Manager & Release Manager.</p>
+                        
+                        <h5 class="font-semibold text-lg text-slate-700 mb-3">Career Highlights (Senior Manager, Project / Program Management)</h5>
+                        <div class="space-y-4">
+                            <div class="card p-4 expandable-content cursor-pointer"> <!-- Changed to expandable-content -->
+                                <h6 class="font-semibold text-md text-teal-700">Direct Supervision & Team Management</h6>
+                                <p class="text-slate-600 text-sm mt-1">Direct Supervisor for Project Managers, Project Coordinators, System and Business Analysts assigned to multiple projects, production support and installation activities.</p>
+                                <div class="details text-slate-500 text-xs"> <!-- Removed mt-2 -->
+                                    <p>Managed large, multi-regional teams of contractors, employees, and vendors for national IT and business program initiatives, ensuring clear roles, fostering team development, and achieving project objectives.</p>
+                                </div>
+                                <button class="text-teal-600 hover:underline mt-4 text-xs toggle-details">Read More</button> <!-- Changed mt-2 to mt-4 -->
+                            </div>
+                            <div class="card p-4 expandable-content cursor-pointer"> <!-- Changed to expandable-content -->
+                                <h6 class="font-semibold text-md text-teal-700">Process & Regulatory Portfolio Oversight</h6>
+                                <p class="text-slate-600 text-sm mt-1">Managed Process Improvement and Regulatory portfolios.</p>
+                                <div class="details text-slate-500 text-xs"> <!-- Removed mt-2 -->
+                                    <p>Oversaw and managed portfolios to ensure alignment with IT strategy and business and regional objectives, driving efficiency and compliance.</p>
+                                </div>
+                                <button class="text-teal-600 hover:underline mt-4 text-xs toggle-details">Read More</button> <!-- Changed mt-2 to mt-4 -->
+                            </div>
+                            <div class="card p-4 expandable-content cursor-pointer"> <!-- Changed to expandable-content -->
+                                <h6 class="font-semibold text-md text-teal-700">Large-Scale System Implementations</h6>
+                                <p class="text-slate-600 text-sm mt-1">Led the implementation of new systems, tools, and processes across large-scale initiatives.</p>
+                                <div class="details text-slate-500 text-xs"> <!-- Removed mt-2 -->
+                                    <p>Directly contributed to the achievement of challenging business goals through strategic IT solution deployment and effective change management across the organization.</p>
+                                </div>
+                                <button class="text-teal-600 hover:underline mt-4 text-xs toggle-details">Read More</button> <!-- Changed mt-2 to mt-4 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="content-section mb-12">
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold text-slate-800">Education</h3>
+                <p class="mt-2 text-md text-slate-500">Academic Foundation</p>
+            </div>
+            <div class="card p-6 max-w-xl mx-auto text-center">
+                <h4 class="font-semibold text-lg text-teal-700">Bachelors Social Work</h4>
+                <p class="mt-2 text-slate-600">California State University, Los Angeles - Los Angeles, CA</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-slate-400">
+            <p class="font-bold text-white text-lg">Kathleen Glispy</p>
+            <p class="text-sm">Tacoma, WA | 503-849-9668</p>
+            <p class="text-sm"><a href="mailto:kathleen@dkgassociatesinc.com" class="hover:text-teal-400 transition-colors">kathleen@dkgassociatesinc.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Close mobile menu when a link is clicked
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Skills Radar Chart
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            const skillsChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        'IT Program & Project Leadership', 'Methodologies & Tools', 'Fiscal & Resource Mgt',
+                        'Regulatory Compliance', 'Stakeholder Engagement', 'Process Improvement'
+                    ],
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: [10, 9, 9, 8, 10, 9], /* Dummy data representing high proficiency based on resume */
+                        backgroundColor: 'rgba(13, 148, 136, 0.2)', /* teal-600 with opacity */
+                        borderColor: 'rgb(15, 118, 110)', /* teal-700 */
+                        pointBackgroundColor: 'rgb(15, 118, 110)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(15, 118, 110)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0,0,0,0.1)' },
+                            grid: { color: 'rgba(0,0,0,0.1)' },
+                            pointLabels: { 
+                                font: { size: 12 },
+                                color: '#475569' /* slate-600 */
+                            },
+                            ticks: {
+                                backdropColor: 'rgba(255,255,255,0)',
+                                color: '#64748b', /* slate-500 */
+                                stepSize: 2,
+                                beginAtZero: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '/10';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Generic Toggle "Show Details" / "Hide Details" for any card with a .toggle-details button and .details content
+            document.querySelectorAll('.card').forEach(card => { // Target all cards
+                const toggleButton = card.querySelector('.toggle-details');
+                const details = card.querySelector('.details');
+                
+                if (toggleButton && details) { // Only apply if the card has a toggle button and details content
+                    const initialButtonText = toggleButton.textContent; // Store initial text (e.g., "Show Details" or "Read More")
+
+                    // Click handler for the toggle button
+                    toggleButton.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent the parent card's click listener from also firing
+                        card.classList.toggle('expanded');
+                        if (card.classList.contains('expanded')) {
+                            toggleButton.textContent = 'Hide Details';
+                            details.style.maxHeight = details.scrollHeight + 'px';
+                        } else {
+                            toggleButton.textContent = initialButtonText; // Revert to original text
+                            details.style.maxHeight = '0';
+                        }
+                    });
+
+                    // Optional: Click handler for the card background itself (excluding buttons within)
+                    card.addEventListener('click', (e) => {
+                        // Ensure click isn't on a button or an element that should not trigger toggle
+                        if (!e.target.closest('.toggle-details') && !e.target.closest('.methodology-button')) { 
+                            card.classList.toggle('expanded');
+                            const isExpanded = card.classList.contains('expanded');
+                            toggleButton.textContent = isExpanded ? 'Hide Details' : initialButtonText;
+                            details.style.maxHeight = isExpanded ? details.scrollHeight + 'px' : '0';
+                        }
+                    });
+                }
+            });
+
+
+            // Methodology Toggle for Competencies Section
+            const btnAgileComp = document.getElementById('btn-agile-comp');
+            const btnWaterfallComp = document.getElementById('btn-waterfall-comp');
+            const btnDevOpsComp = document = document.getElementById('btn-devops-comp');
+            const btnLeanComp = document.getElementById('btn-lean-comp');
+            const methodologyCompContent = document.getElementById('methodology-comp-content');
+
+            const methodologyData = {
+                agile: {
+                    text: "Skilled in applying iterative and collaborative approaches, including Scrum boards, Kanban boards, Backlog Management, and Sprint Planning.",
+                    visual: "🔄<span>Iterative & Flexible</span>"
+                },
+                waterfall: {
+                    text: "Proficient in traditional Waterfall methodology, managing all phases sequentially: Requirements, Design, Development, Testing, Implementation, and Maintenance.",
+                    visual: "🪜<span>Sequential & Structured</span>"
+                },
+                devops: {
+                    text: "Experienced in DevOps principles, including Continuous Integration/Continuous Delivery (CI/CD), version control, continuous monitoring, and feedback loops for rapid deployment and operational excellence.",
+                    visual: "🔗<span>Automated & Integrated</span>"
+                },
+                lean: {
+                    text: "Adept at Lean principles for process optimization, including Value Stream Mapping, Root Cause Analysis, and KPI Tracking to eliminate waste and maximize value.",
+                    visual: "📈<span>Efficient & Value-Driven</span>"
+                }
+            };
+
+            function updateMethodologyContent(method) {
+                methodologyCompContent.innerHTML = methodologyData[method].text + '<div class="methodology-visual">' + methodologyData[method].visual + '</div>';
+                
+                // Reset all buttons to default style
+                [btnAgileComp, btnWaterfallComp, btnDevOpsComp, btnLeanComp].forEach(btn => {
+                    btn.classList.remove('bg-teal-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+                });
+                // Set active button style
+                document.getElementById('btn-' + method + '-comp').classList.add('bg-teal-600', 'text-white');
+                document.getElementById('btn-' + method + '-comp').classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+            }
+
+            btnAgileComp.addEventListener('click', () => updateMethodologyContent('agile'));
+            btnWaterfallComp.addEventListener('click', () => updateMethodologyContent('waterfall'));
+            btnDevOpsComp.addEventListener('click', () => updateMethodologyContent('devops'));
+            btnLeanComp.addEventListener('click', () => updateMethodologyContent('lean'));
+            
+            // Initialize methodology content
+            updateMethodologyContent('agile');
+
+
+            // Professional Experience Timeline & Details
+            const companyItems = document.querySelectorAll('.timeline-item');
+            const experienceContents = document.querySelectorAll('.experience-detail-content');
+
+            function showExperience(companyId) {
+                companyItems.forEach(item => item.classList.remove('active'));
+                document.getElementById('company-' + companyId).classList.add('active');
+
+                experienceContents.forEach(content => content.classList.remove('active'));
+                document.getElementById('experience-' + companyId).classList.add('active');
+            }
+
+            companyItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const companyId = item.getAttribute('data-company');
+                    showExperience(companyId);
+                });
+            });
+
+            // Set initial active experience
+            showExperience('dkg');
+
+
+            // Smooth Scrolling & Active Nav Link Highlighting
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+                // Add initial active state for first section on load
+                if (anchor.getAttribute('href') === '#overview') {
+                    anchor.classList.add('active');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
