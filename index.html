@@ -3,28 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kathleen Glispy | Senior IT Program & Project Manager</title>
+    <title>Kathleen Glispy | Senior Project Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Professional Slate & Teal -->
-    <!-- Application Structure Plan: The SPA is designed as an interactive portfolio/dashboard to give a hiring manager a dynamic way to explore Kathleen's complete resume. It starts with a prominent summary and a visual skills radar chart for a quick overview. The main content is divided into logical thematic sections: Overview, Core Competencies, Professional Experience, and Education. A sticky header with navigation allows direct jumping between these sections. This structure enables non-linear exploration, allowing users to focus on areas of interest. Interactive elements like expandable details for competencies, a timeline for experience, and detailed content reveal on demand are used to make the resume engaging and highlight depth without overwhelming the user, showcasing a modern, digital approach to presenting professional history. -->
-    <!-- Visualization & Content Choices: 
-        - Header/Footer (HTML/CSS): Provides persistent navigation and contact information. Standard web pattern for usability.
-        - Overview Section (HTML/CSS + Chart.js/Canvas): Features the main summary and a radar chart. Goal: Inform/Summarize. The radar chart visually compares core competencies, providing a high-impact, at-a-glance understanding of strengths.
-        - Core Competencies Section (HTML/CSS/JS): Categorizes and expands on detailed skills. Goal: Organize/Inform/Compare. Each competency area (Methodologies, Fiscal/Resource Mgt, Regulatory Compliance, Stakeholder Engagement) uses a combination of expandable detail cards (for bulleted lists) or toggles (for methodologies) to reveal information on demand, preventing a long scroll.
-        - Professional Experience Section (HTML/CSS/JS): Presents career history chronologically. Goal: Organize/Inform. A simple timeline structure with clickable company cards allows users to select a specific employer and view detailed roles and accomplishments for that period. This offers context and highlights career progression.
-        - Education Section (HTML/CSS): Simple textual display. Goal: Inform.
-        - Justification: All interactive elements are chosen to break down dense resume text into digestible, explorable chunks. The use of Chart.js for the radar chart and dynamic content reveals via JavaScript enhances engagement and makes the information more digestible, transforming a traditional resume into an interactive digital experience. NO SVG graphics or Mermaid JS are used, adhering to guidelines. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc; /* slate-50 */
             color: #334155; /* slate-700 */
+            line-height: 1.6;
         }
+        .container {
+            max-width: 1000px; /* Wider for better resume layout on desktop */
+            margin: 0 auto;
+        }
+        .content-section {
+            padding-top: 24px;
+            padding-bottom: 24px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        /* Main section interactive details styling */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out; /* Smooth transition */
+        }
+        .collapsible-content.expanded {
+            max-height: 2000px; /* A very large value to ensure content never gets cut off, adjust if needed */
+        }
+        .methodology-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.5rem;
+            font-size: 1.25rem;
+            color: #0d9488;
+        }
+        .methodology-visual span {
+            margin: 0 0.5rem;
+        }
+        /* Specific styling for methodology blocks */
+        .methodology-block {
+            padding: 0.75rem;
+            background-color: #f8fafc; /* light slate background */
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.25rem;
+            color: #475569; /* slate-600 */
+            border: 1px solid #e2e8f0; /* slate-200 border */
+        }
+
+        /* Navigation specific styles */
         .nav-link {
             transition: color 0.3s ease, border-bottom-color 0.3s ease;
             border-bottom: 2px solid transparent;
@@ -34,8 +71,10 @@
             border-bottom-color: #0f766e;
         }
         .content-section {
-            scroll-margin-top: 80px;
+            scroll-margin-top: 80px; /* Offset for sticky header */
         }
+        
+        /* Chart specific styles */
         .chart-container {
             position: relative;
             margin: auto;
@@ -43,35 +82,6 @@
             width: 80vw;
             max-width: 500px;
             max-height: 500px;
-        }
-        .card {
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
-        }
-        .expandable-content .details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-        .expandable-content.expanded .details {
-            max-height: 500px; /* Ample height for expansion */
-        }
-        .methodology-visual {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1rem;
-            font-size: 1.25rem;
-            color: #0d9488;
-        }
-        .methodology-visual span {
-            margin: 0 0.5rem;
         }
 
         /* Timeline specific styles */
@@ -116,7 +126,7 @@
         }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
     <!-- Header & Navigation -->
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
@@ -154,10 +164,21 @@
     </header>
 
     <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <!-- Overview Section -->
+        <!-- Professional Summary & Key Competencies Section -->
         <section id="overview" class="content-section text-center mb-24">
-            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Senior IT Program & Project Manager</h2>
-            <p class="mt-6 max-w-3xl mx-auto text-lg leading-8 text-slate-600">Highly accomplished Senior IT Program and Project Manager with over two decades of experience driving complex, multi-million dollar initiatives and leading high-performing teams within dynamic environments, including healthcare and insurance. Adept at navigating regulatory landscapes and implementing large-scale IT solutions from inception to successful delivery. Proven expertise in strategic planning, PMO governance, risk mitigation, and fostering cross-functional collaboration. A proactive leader committed to optimizing project methodologies to achieve challenging organizational objectives and enhance operational excellence.</p>
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Professional Summary & Key Competencies</h2>
+            <p class="mt-6 max-w-3xl mx-auto text-lg leading-8 text-slate-600">Dynamic and highly accomplished Project Manager with over two decades of experience driving complex, high-impact initiatives and leading high-performing teams. Proven expertise in defining goals, managing budgets and timelines, and ensuring strong project outcomes within diverse environments, including a significant tenure within a non-profit healthcare organization. Adept at building lasting relationships with community partners, contractors, volunteers, and stakeholders, and skilled in developing and delivering training content and streamlining operational workflows. A proactive leader committed to advancing organizational missions, expanding educational programs, and contributing to community inspiration and historic preservation through effective project leadership, a demonstrated passion for community engagement, and emerging expertise in grant writing and fundraising coordination. Highly experienced in managing complex regulatory reporting projects and coordinating large-scale initiatives across diverse regional and vendor landscapes. Proven ability to develop and execute strategic marketing and communications campaigns.</p>
+            <div class="mt-10 max-w-3xl mx-auto text-left">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">Core Competencies Overview:</h3>
+                <ul class="list-disc list-inside text-lg text-slate-600 space-y-2">
+                    <li>Project Leadership & Execution: Guiding initiatives from conception to successful delivery, ensuring strong outcomes, including large-scale and multi-regional program coordination.</li>
+                    <li>Stakeholder & Community Engagement: Cultivating lasting relationships with diverse partners, government agencies, volunteers, and community groups, including volunteer coordination, tailoring communication and training, and coordinating fundraising events.</li>
+                    <li>Fiscal & Resource Management: Confident in managing budgets, timelines, and supporting fundraising efforts, including grant research and event coordination, for mission-driven initiatives, with extensive experience in contract, SLA, and KPI management.</li>
+                    <li>Methodologies & Tools: Proficient in various project management frameworks, including Agile, Waterfall, DevOps, and Lean.</li>
+                    <li>Program Administration & Reporting: Administering educational programs, tracking progress, preparing updates for internal use, and creating and facilitating training content, including complex regulatory data reporting.</li>
+                    <li>Process Optimization & Policy Adherence: Driving efficiency and ensuring compliance with operational standards and policies, including operational workflow streamlining and meeting stringent reporting specifications.</li>
+                </ul>
+            </div>
             <div class="mt-10">
                 <div class="chart-container">
                     <canvas id="skillsChart"></canvas>
@@ -166,179 +187,272 @@
             </div>
         </section>
 
-        <!-- Core Competencies Section -->
-        <section id="competencies" class="content-section mb-24">
-            <div class="text-center mb-12">
-                <h3 class="text-2xl font-bold text-slate-800">Core Competencies</h3>
+        <!-- Core Competencies Section (Interactive) -->
+        <section id="competencies" class="content-section mb-4">
+            <div class="text-center mb-4">
+                <h3 class="text-2xl font-bold text-slate-800">Core Competencies - In-Depth</h3>
                 <p class="mt-2 text-md text-slate-500">In-depth capabilities across IT Program and Project Leadership, Fiscal Management, Compliance, and Stakeholder Engagement.</p>
             </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Methodologies Card -->
-                <div class="card p-6 expandable-content cursor-pointer">
-                    <h4 class="font-semibold text-lg text-teal-700">Methodologies & Tools</h4>
-                    <p class="mt-2 text-slate-600">Proficiency in various project management frameworks.</p>
-                    <div class="details mt-4 text-slate-600 text-sm">
-                        <div class="flex justify-center space-x-4 mb-4">
-                            <button id="btn-agile-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-teal-600 text-white shadow-sm">Agile</button>
-                            <button id="btn-waterfall-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300">Waterfall</button>
-                            <button id="btn-devops-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300">DevOps</button>
-                             <button id="btn-lean-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300">Lean</button>
+            <div class="card p-6">
+                <button class="font-semibold text-lg text-teal-700 w-full text-left flex justify-between items-center focus:outline-none collapsible-toggle" data-target="competencies-details">
+                    <span>View Detailed Competencies</span>
+                    <svg class="w-6 h-6 transform transition-transform duration-300 collapsible-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="competencies-details" class="collapsible-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mt-4">
+                        <!-- Methodologies Card -->
+                        <div class="card p-6">
+                            <h4 class="font-semibold text-lg text-teal-700">Methodologies & Tools</h4>
+                            <p class="mt-2 text-slate-600">Proficiency in various project management frameworks:</p>
+                            <div class="mt-4 text-slate-600">
+                                <div class="flex justify-center space-x-4 mb-4">
+                                    <button id="btn-agile-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-teal-600 text-white shadow-sm methodology-button">Agile</button>
+                                    <button id="btn-waterfall-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300 methodology-button">Waterfall</button>
+                                    <button id="btn-devops-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300 methodology-button">DevOps</button>
+                                   <button id="btn-lean-comp" class="px-4 py-2 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300 methodology-button">Lean</button>
+                                </div>
+                                <div id="methodology-comp-content" class="text-center p-4 bg-slate-50 rounded-lg">
+                                    Skilled in applying iterative and collaborative approaches, including Scrum boards, Kanban boards, Backlog Management, and Sprint Planning.
+                                    <div class="methodology-visual">🚀<span>Iterative & Flexible</span></div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="methodology-comp-content" class="text-center p-4 bg-slate-50 rounded-lg">
-                            Skilled in applying iterative and collaborative approaches, including Scrum boards, Kanban boards, Backlog Management, and Sprint Planning.
-                            <div class="methodology-visual">🔄<span>Iterative & Flexible</span></div>
+
+                        <!-- Fiscal and Resource Management Card -->
+                        <div class="card p-6">
+                            <h4 class="font-semibold text-lg text-teal-700">Fiscal & Resource Management</h4>
+                            <p class="mt-2 text-slate-600">Expertise in financial planning and resource optimization for mission-driven initiatives.</p>
+                            <div class="text-slate-600 text-sm">
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>Comprehensive expertise in estimating, forecasting, developing business cases, and managing budget planning and approvals for project initiatives.</li>
+                                    <li>Skilled in the implementation of robust financial controls, procurement processes, and supporting fundraising and revenue-generating initiatives, including a successful Habitat for Humanity campaign and coordinating fundraising dinners and events for community agencies.</li>
+                                    <li>Proficient in budget administration, accurate financial reporting, and proactive monitoring with timely escalation of fiscal variances.</li>
+                                    <li>Strategic allocation of resources, effective vendor and contract management, including negotiating SLAs and KPIs, coupled with successful staff recruitment, retention, and team development.</li>
+                                    <li>Currently pursuing Grant Writing Certification to enhance capabilities in securing external funding for organizational initiatives.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Policy Adherence & Operational Integrity Card -->
+                        <div class="card p-6">
+                            <h4 class="font-semibold text-lg text-teal-700">Policy Adherence & Operational Integrity</h4>
+                            <p class="mt-2 text-slate-600">Ensuring adherence to organizational policies and best practices.</p>
+                            <div class="text-slate-600 text-sm">
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>Proficient in the execution of complex organizational policies and procedures to meet operational mandates, including working with government agencies for compliance and submitting data meeting reporting specifications.</li>
+                                    <li>Ensuring stringent data security protocols and adherence to privacy regulations, maintaining operational integrity, with experience interacting with Medicare/Medicaid entities on testing and reporting processes.</li>
+                                    <li>Expertise in administering internal controls, ensuring accurate and compliant practices.</li>
+                                    <li>Comprehensive support for internal audit preparation, active participation during audits, and diligent remediation of identified findings.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Stakeholder Engagement Card -->
+                        <div class="card p-6">
+                            <h4 class="font-semibold text-lg text-teal-700">Stakeholder & Community Engagement</h4>
+                            <p class="mt-2 text-slate-600">Fostering collaboration and building lasting relationships with diverse groups.</p>
+                            <div class="text-slate-600 text-sm">
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>Developing and delivering impactful executive reports and presentations to leadership and partners.</li>
+                                    <li>Facilitating collaborative goal setting, meticulous progress reporting, and efficient issue resolution across diverse teams and community groups.</li>
+                                    <li>Strategic communication planning to ensure clear, consistent, and timely dissemination of information to all stakeholders, including creating and curating wiki sites for internal and external partners.</li>
+                                    <li>Proven track record in successful client and community account management, building strong relationships and driving collective success, including direct involvement in volunteer coordination for community service initiatives focused on environmental stewardship and community improvement, and coordinating fundraising dinners and events for community agencies.</li>
+                                    <li>Expert in building and managing relationships with diverse third-party vendors (both domestic and international across various time zones) and business partners across multiple regions.</li>
+                                    <li>Led comprehensive marketing and communications strategies, including creating and managing ad campaigns, social media presence, metrics tracking, and drip campaigns with compelling copy. Collaborated with external vendors to provide targeted SEO blogs and communication experts to build effective public relations campaigns.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
-                </div>
-
-                <!-- Fiscal and Resource Management Card -->
-                <div class="card p-6 expandable-content cursor-pointer">
-                    <h4 class="font-semibold text-lg text-teal-700">Fiscal & Resource Management</h4>
-                    <p class="mt-2 text-slate-600">Expertise in financial planning and resource optimization.</p>
-                    <div class="details text-slate-600 text-sm">
-                        <ul class="list-disc list-inside space-y-1">
-                            <li>Estimates, Forecasts, Business Cases, Budget Planning, Budget Approvals</li>
-                            <li>Implementation of Financial Controls, Procurement, Compliance, Audit Trails, Audits</li>
-                            <li>Budget Administration, Financial Reporting, Monitoring and Escalation</li>
-                            <li>Resource Allocation, Vendor Management, Contract Management, Staff Recruitment and Retention, Team Development</li>
-                        </ul>
+                    <!-- Global Show Less button for the entire Competencies section -->
+                    <div class="mt-8 text-center">
+                        <button class="text-sm font-semibold text-teal-600 hover:text-teal-800 collapsible-toggle" data-target="competencies-details">Show Less <span class="ml-1">&uarr;</span></button>
                     </div>
-                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
-                </div>
-
-                <!-- Regulatory Compliance Card -->
-                <div class="card p-6 expandable-content cursor-pointer">
-                    <h4 class="font-semibold text-lg text-teal-700">Regulatory Compliance</h4>
-                    <p class="mt-2 text-slate-600">Ensuring adherence to industry and privacy standards.</p>
-                    <div class="details text-slate-600 text-sm">
-                        <ul class="list-disc list-inside space-y-1">
-                            <li>Execution of policies and procedures</li>
-                            <li>Patient Privacy and Data Security (ACA and HIPAA)</li>
-                            <li>Billing and Coding Compliance</li>
-                            <li>Internal Audit preparation, support and remediation</li>
-                        </ul>
-                    </div>
-                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
-                </div>
-
-                <!-- Stakeholder Engagement Card -->
-                <div class="card p-6 expandable-content cursor-pointer">
-                    <h4 class="font-semibold text-lg text-teal-700">Stakeholder Engagement</h4>
-                    <p class="mt-2 text-slate-600">Fostering collaboration and effective communication.</p>
-                    <div class="details text-slate-600 text-sm">
-                        <ul class="list-disc list-inside space-y-1">
-                            <li>Executive Reporting and Presentations</li>
-                            <li>Goal Setting, Reporting and Issue Resolution</li>
-                            <li>Communication Planning</li>
-                            <li>Client Account Management</li>
-                        </ul>
-                    </div>
-                     <button class="text-teal-600 hover:underline mt-4 text-sm toggle-details">Show Details</button>
                 </div>
             </div>
         </section>
 
-        <!-- Professional Experience Section -->
-        <section id="experience" class="content-section mb-24">
-            <div class="text-center mb-12">
-                <h3 class="text-2xl font-bold text-slate-800">Professional Experience</h3>
-                <p class="mt-2 text-md text-slate-500">A detailed look at my career progression and significant contributions.</p>
+        <!-- NEW: Values & Community Connection Section (Interactive) -->
+        <section id="values-connection" class="content-section mb-4">
+            <div class="text-center mb-4">
+                <h3 class="text-2xl font-bold text-slate-800">Values & Community Connection</h3>
+                <p class="mt-2 text-md text-slate-500">Exploring my alignment with core organizational values.</p>
             </div>
-            <div class="grid md:grid-cols-4 gap-8">
-                <!-- Timeline/Company Selector -->
-                <div class="md:col-span-1">
-                    <div class="timeline-container relative pl-8">
-                        <div class="timeline-line"></div>
-                        <div id="company-dkg" class="timeline-item active" data-company="dkg">
-                            <div class="timeline-dot"></div>
-                            <div class="flex-grow">
-                                <p class="font-semibold text-slate-800">DKG & Associates</p>
-                                <p class="text-xs text-slate-500">Sept 2020 - Present</p>
-                            </div>
+            <div class="card p-6">
+                <button class="font-semibold text-lg text-teal-700 w-full text-left flex justify-between items-center focus:outline-none collapsible-toggle" data-target="values-details">
+                    <span>View Values Alignment</span>
+                    <svg class="w-6 h-6 transform transition-transform duration-300 collapsible-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="values-details" class="collapsible-content">
+                    <p class="text-slate-600 my-6">My professional journey and personal commitment align deeply with the Olympia Tumwater Foundation's dedication to service, innovation, sustainability, honesty, and recognition.</p>
+
+                    <!-- Service Card -->
+                    <div class="card p-4 mb-4">
+                        <h4 class="font-semibold text-lg text-teal-700">Service</h4>
+                        <div class="mt-2 text-slate-600 text-sm">
+                            <p>My approach to **service** involves directly understanding stakeholder needs and proactively addressing them to foster collaborative success. For instance, in a healthcare organization, I introduced DevOps, a methodology aimed at accelerating software delivery. Recognizing team resistance to automation, I built trust by first streamlining their existing workflows, demonstrating value and empowering them with new skills *before* full implementation. This approach is fundamental to successful organizational change and effective stakeholder management.</p>
                         </div>
-                        <div id="company-kp" class="timeline-item" data-company="kp">
-                            <div class="timeline-dot"></div>
-                            <div class="flex-grow">
-                                <p class="font-semibold text-slate-800">Kaiser Permanente</p>
-                                <p class="text-xs text-slate-500">Sept 2004 - Oct 2019</p>
-                            </div>
+                    </div>
+
+                    <!-- Innovation Card -->
+                    <div class="card p-4 mb-4">
+                        <h4 class="font-semibold text-lg text-teal-700">Innovation</h4>
+                        <div class="mt-2 text-slate-600 text-sm">
+                            <p>My drive for **innovation** enables the adoption of new capabilities. When faced with introducing a new, highly specialized database design at an insurance company, I developed a unique methodology. This approach strategically leveraged existing team members' deep domain expertise, allowing them to adapt to new technologies through stepped on-ramping and peer programming. This creative solution fostered continuous learning and maximized our collective potential, ensuring internal talent could apply their knowledge effectively.</p>
                         </div>
+                    </div>
+
+                    <!-- Sustainability Card -->
+                    <div class="card p-4 mb-4">
+                        <h4 class="font-semibold text-lg text-teal-700">Sustainability</h4>
+                        <div class="mt-2 text-slate-600 text-sm">
+                            <p>My commitment extends to **sustainability**, evident in my active participation in environmental preservation efforts that support long-term ecological health. I've volunteered to help eradicate invasive species from Oregon trailheads, understanding this directly contributes to native plant vitality and the lasting well-being of shared natural spaces.</p>
+                        </div>
+                    </div>
+
+                    <!-- Honesty and Integrity Card -->
+                    <div class="card p-4 mb-4">
+                        <h4 class="font-semibold text-lg text-teal-700">Honesty and Integrity</h4>
+                        <div class="mt-2 text-slate-600 text-sm">
+                            <p>My commitment to **honesty and integrity** guides critical decisions. In a healthcare organization, during the installation of a new application for oncologists, I made the difficult but necessary choice to roll back a flawed implementation after an intensive weekend effort. Prioritizing long-term quality over immediate costs and convenience, I transparently communicated the rationale, demonstrating that upholding quality standards ensures optimal outcomes and builds trust.</p>
+                        </div>
+                    </div>
+
+                    <!-- Recognition Card -->
+                    <div class="card p-4 mb-4">
+                        <h4 class="font-semibold text-lg text-teal-700">Recognition</h4>
+                        <div class="mt-2 text-slate-600 text-sm">
+                            <p>I also emphasize **recognition** in leadership. In my roles, I fostered a culture of appreciation by regularly highlighting team and individual achievements. I solicited nominations from peers, ensuring recognition came from those who witnessed daily effort, reinforcing shared value and appreciation within the team.</p>
+                        </div>
+                    </div>
+                    <!-- Global Show Less button for the entire Values section -->
+                    <div class="mt-8 text-center">
+                        <button class="text-sm font-semibold text-teal-600 hover:text-teal-800 collapsible-toggle" data-target="values-details">Show Less <span class="ml-1">&uarr;</span></button>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Experience Details -->
-                <div class="md:col-span-3">
-                    <div id="experience-dkg" class="experience-detail-content active card p-6">
-                        <h4 class="font-bold text-xl text-teal-700 mb-4">President/Owner | DKG & Associates</h4>
-                        <p class="text-slate-600 mb-4">Tacoma, WA | September 2020 - Present</p>
-                        <div class="space-y-4">
-                            <div>
-                                <h5 class="font-semibold text-lg text-slate-700">Customer Relationship Management</h5>
-                                <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
-                                    <li>Leads IT consulting services for diverse industries (finance, banking, insurance, healthcare, e-commerce). Specializes in CRM development, database management, and technical application solutions.</li>
-                                    <li>Spearheads customer relationship management strategies, ensuring successful client onboarding, retention, and service customization.</li>
-                                    <li>Manages end-to-end reporting, reconciliation processes, and web development projects, enhancing business visibility and engagement.</li>
-                                </ul>
+
+        <!-- Professional Experience Section (Interactive) -->
+        <section id="experience" class="content-section mb-4">
+            <div class="text-center mb-4">
+                <h3 class="text-2xl font-bold text-slate-800">Professional Experience</h3>
+                <p class="mt-2 text-md text-slate-500">Click on each company for a detailed look at my contributions.</p>
+            </div>
+            <div class="card p-6">
+                <button class="font-semibold text-lg text-teal-700 w-full text-left flex justify-between items-center focus:outline-none collapsible-toggle" data-target="experience-details">
+                    <span>View Career Highlights</span>
+                    <svg class="w-6 h-6 transform transition-transform duration-300 collapsible-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="experience-details" class="collapsible-content">
+                    <div class="grid md:grid-cols-4 gap-8 mt-4">
+                        <!-- Timeline/Company Selector -->
+                        <div class="md:col-span-1">
+                            <div class="timeline-container relative pl-8">
+                                <div class="timeline-line"></div>
+                                <div id="company-dkg" class="timeline-item active" data-company="dkg">
+                                    <div class="timeline-dot"></div>
+                                    <div class="flex-grow">
+                                        <p class="font-semibold text-slate-800">DKG & Associates</p>
+                                        <p class="text-xs text-slate-500">Sept 2020 - Present</p>
+                                    </div>
+                                </div>
+                                <div id="company-kp" class="timeline-item" data-company="kp">
+                                    <div class="timeline-dot"></div>
+                                    <div class="flex-grow">
+                                        <p class="font-semibold text-slate-800">Kaiser Permanente</p>
+                                        <p class="text-xs text-slate-500">Sept 2004 - Oct 2019</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h5 class="font-semibold text-lg text-slate-700">Technical Acumen</h5>
-                                <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
-                                    <li>Database Management and CRM Development, Conversion</li>
-                                    <li>Technical Application Implementation across a diverse client base</li>
-                                    <li>Process Improvement and Business Analysis</li>
-                                    <li>System Go Live Management and Production Support</li>
-                                </ul>
+                        </div>
+
+                        <!-- Experience Details Content Area -->
+                        <div class="md:col-span-3">
+                            <div id="experience-dkg-content" class="experience-detail-content active card p-6">
+                                <h4 class="font-bold text-xl text-teal-700 mb-4">President/Owner | DKG & Associates</h4>
+                                <p class="text-slate-600 mb-4">Tacoma, WA | September 2020 - Present</p>
+                                <div class="space-y-4">
+                                    <div>
+                                        <h5 class="font-semibold text-lg text-slate-700">Project Leadership & Client Relationship Management</h5>
+                                        <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                            <li>Led IT consulting services and managed diverse projects for clients across finance, banking, insurance, healthcare, and e-commerce sectors.</li>
+                                            <li>Specialized in end-to-end CRM development, database management, and implementing technical application solutions, defining project goals and ensuring strong outcomes.</li>
+                                            <li>Spearheaded customer relationship management strategies, ensuring successful client onboarding, retention, and service customization, building lasting partnerships.</li>
+                                            <li>Managed comprehensive reporting and reconciliation processes, alongside web development initiatives, enhancing business visibility and client engagement, including providing training materials and hands-on tailored training to clients on application usage based on their business processes and workflows.</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-lg text-slate-700">Marketing & Communications Strategy</h5>
+                                        <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                            <li>Designed and executed comprehensive ad campaigns and social media strategies, tracking performance metrics and optimizing for population targeting. Developed engaging drip campaigns and wrote compelling copy to drive outreach and engagement.</li>
+                                            <li>Collaborated with external vendors to provide targeted blogs for SEO optimization and partnered with communication experts to build effective public relations campaigns.</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-lg text-slate-700">Technical Acumen & Process Improvement</h5>
+                                        <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                            <li>Directed database management and CRM development/conversion projects, ensuring technical excellence and successful delivery.</li>
+                                            <li>Orchestrated technical application implementations across a diverse client base, aligning solutions with strategic objectives.</li>
+                                            <li>Drove process improvement and business analysis initiatives to optimize operations and enhance efficiency, working with internal teams to streamline their operational workflow as part of DevOps initiatives.</li>
+                                            <li>Oversaw system go-live management and provided critical production support, ensuring smooth transitions and ongoing operational stability.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="experience-kp-content" class="experience-detail-content card p-6">
+                                <h4 class="font-bold text-xl text-teal-700 mb-4">Kaiser Permanente</h4>
+                                <p class="text-slate-600 mb-4">Oakland, CA & Northwest Region | September 2004 - October 2019</p>
+                                <p class="text-slate-700 font-medium mb-4">Served in progressively responsible roles including Senior Manager, Project Program Management; Senior National IT Program Manager; Senior Program Manager, External Reporting; and Lead Project Manager & Release Manager.</p>
+                                
+                                <h5 class="font-semibold text-lg text-slate-700 mb-3">Career Highlights (Senior Manager, Project / Program Management)</h5>
+                                <div class="space-y-4">
+                                    <div class="card p-4">
+                                        <h6 class="font-semibold text-md text-teal-700">Direct Supervision & Team Leadership</h6>
+                                        <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                            <li>Directly supervised Project Managers, Project Coordinators, System and Business Analysts, fostering high-performing teams for multiple projects and production support activities, including creating content and facilitating trainings for project managers.</li>
+                                            <li>Managed large, multi-regional teams of contractors, employees, and vendors for national IT and business program initiatives, ensuring clear roles, fostering team development, and achieving complex project objectives.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="card p-4">
+                                        <h6 class="font-semibold text-md text-teal-700">Strategic Project & Program Oversight</h6>
+                                        <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                            <li>Managed process improvement and regulatory portfolios, ensuring project alignment with IT strategy and business objectives, including streamlining operational workflows as part of DevOps initiatives.</li>
+                                            <li>Oversaw and managed portfolios to ensure alignment with IT strategy and business and regional objectives, driving efficiency and compliance through effective project planning and execution.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="card p-4">
+                                        <h6 class="font-semibold text-md text-teal-700">Large-Scale System Implementations & Impact</h6>
+                                        <ul class="list-disc list-inside space-y-1 text-slate-600 text-sm">
+                                            <li>Led the comprehensive implementation of new systems, tools, and processes across large-scale initiatives.</li>
+                                            <li>Directly contributed to the achievement of challenging business goals through strategic IT solution deployment and effective change management across the organization, delivering measurable impact and enhancing operational excellence.</li>
+                                            <li>Coordinated the National Claims Program, requiring extensive collaboration with business partners and stakeholders across seven US regions to meet critical deliverables.</li>
+                                            <li>Managed significant outsourcing initiatives, specifically coordinating with an Indian vendor across time zones. This involved building strong relationships with third-party providers and seamlessly integrating development, requirements, testing, and training to meet project deliverables.</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div id="experience-kp" class="experience-detail-content card p-6">
-                        <h4 class="font-bold text-xl text-teal-700 mb-4">Kaiser Permanente</h4>
-                        <p class="text-slate-600 mb-4">Oakland, CA & Northwest Region | September 2004 - October 2019</p>
-                        <p class="text-slate-700 font-medium mb-4">Served in progressively responsible roles including Senior Manager, Project Program Management; Senior National IT Program Manager; Senior Program Manager; Program Manager, External Reporting; and Lead Project Manager & Release Manager.</p>
-                        
-                        <h5 class="font-semibold text-lg text-slate-700 mb-3">Career Highlights (Senior Manager, Project / Program Management)</h5>
-                        <div class="space-y-4">
-                            <div class="card p-4 expandable-content cursor-pointer"> <!-- Changed to expandable-content -->
-                                <h6 class="font-semibold text-md text-teal-700">Direct Supervision & Team Management</h6>
-                                <p class="text-slate-600 text-sm mt-1">Direct Supervisor for Project Managers, Project Coordinators, System and Business Analysts assigned to multiple projects, production support and installation activities.</p>
-                                <div class="details text-slate-500 text-xs"> <!-- Removed mt-2 -->
-                                    <p>Managed large, multi-regional teams of contractors, employees, and vendors for national IT and business program initiatives, ensuring clear roles, fostering team development, and achieving project objectives.</p>
-                                </div>
-                                <button class="text-teal-600 hover:underline mt-4 text-xs toggle-details">Read More</button> <!-- Changed mt-2 to mt-4 -->
-                            </div>
-                            <div class="card p-4 expandable-content cursor-pointer"> <!-- Changed to expandable-content -->
-                                <h6 class="font-semibold text-md text-teal-700">Process & Regulatory Portfolio Oversight</h6>
-                                <p class="text-slate-600 text-sm mt-1">Managed Process Improvement and Regulatory portfolios.</p>
-                                <div class="details text-slate-500 text-xs"> <!-- Removed mt-2 -->
-                                    <p>Oversaw and managed portfolios to ensure alignment with IT strategy and business and regional objectives, driving efficiency and compliance.</p>
-                                </div>
-                                <button class="text-teal-600 hover:underline mt-4 text-xs toggle-details">Read More</button> <!-- Changed mt-2 to mt-4 -->
-                            </div>
-                            <div class="card p-4 expandable-content cursor-pointer"> <!-- Changed to expandable-content -->
-                                <h6 class="font-semibold text-md text-teal-700">Large-Scale System Implementations</h6>
-                                <p class="text-slate-600 text-sm mt-1">Led the implementation of new systems, tools, and processes across large-scale initiatives.</p>
-                                <div class="details text-slate-500 text-xs"> <!-- Removed mt-2 -->
-                                    <p>Directly contributed to the achievement of challenging business goals through strategic IT solution deployment and effective change management across the organization.</p>
-                                </div>
-                                <button class="text-teal-600 hover:underline mt-4 text-xs toggle-details">Read More</button> <!-- Changed mt-2 to mt-4 -->
-                            </div>
-                        </div>
+                    <!-- Global Show Less button for the entire Experience section -->
+                    <div class="mt-8 text-center">
+                        <button class="text-sm font-semibold text-teal-600 hover:text-teal-800 collapsible-toggle" data-target="experience-details">Show Less <span class="ml-1">&uarr;</span></button>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Education Section -->
-        <section id="education" class="content-section mb-12">
-            <div class="text-center mb-12">
+        <section id="education" class="content-section mb-4">
+            <div class="text-center mb-4">
                 <h3 class="text-2xl font-bold text-slate-800">Education</h3>
                 <p class="mt-2 text-md text-slate-500">Academic Foundation</p>
             </div>
             <div class="card p-6 max-w-xl mx-auto text-center">
                 <h4 class="font-semibold text-lg text-teal-700">Bachelors Social Work</h4>
                 <p class="mt-2 text-slate-600">California State University, Los Angeles - Los Angeles, CA</p>
+                <p class="mt-2 text-slate-600 font-medium">Currently pursuing Grant Writing Certification</p>
             </div>
         </section>
     </main>
@@ -422,59 +536,62 @@
                 }
             });
 
-            // Generic Toggle "Show Details" / "Hide Details" for any card with a .toggle-details button and .details content
-            document.querySelectorAll('.card').forEach(card => { // Target all cards
-                const toggleButton = card.querySelector('.toggle-details');
-                const details = card.querySelector('.details');
-                
-                if (toggleButton && details) { // Only apply if the card has a toggle button and details content
-                    const initialButtonText = toggleButton.textContent; // Store initial text (e.g., "Show Details" or "Read More")
+            // Main Section Collapsible Toggles (Show More/Show Less at top and bottom)
+            document.querySelectorAll('.collapsible-toggle').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        const isExpanded = targetElement.classList.contains('expanded');
+                        
+                        // Toggle the expanded class
+                        targetElement.classList.toggle('expanded');
+                        
+                        // Find all related toggle buttons for this section (top and bottom)
+                        const relatedToggles = document.querySelectorAll(`[data-target="${targetId}"]`);
+                        
+                        relatedToggles.forEach(btn => {
+                            const arrow = btn.querySelector('.collapsible-arrow');
+                            const textSpan = btn.querySelector('.toggle-text'); // This might be null for the bottom button
 
-                    // Click handler for the toggle button
-                    toggleButton.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent the parent card's click listener from also firing
-                        card.classList.toggle('expanded');
-                        if (card.classList.contains('expanded')) {
-                            toggleButton.textContent = 'Hide Details';
-                            details.style.maxHeight = details.scrollHeight + 'px';
+                            if (arrow) {
+                                arrow.classList.toggle('rotate-180', !isExpanded);
+                            }
+                            if (textSpan) { // Only update text if the span exists (i.e., for the top button)
+                                textSpan.textContent = isExpanded ? 'Show More' : 'Show Less';
+                            }
+                        });
+
+                        // Ensure max-height is correctly calculated when expanding
+                        if (!isExpanded) {
+                            targetElement.style.maxHeight = targetElement.scrollHeight + 'px';
                         } else {
-                            toggleButton.textContent = initialButtonText; // Revert to original text
-                            details.style.maxHeight = '0';
+                            targetElement.style.maxHeight = '0';
                         }
-                    });
-
-                    // Optional: Click handler for the card background itself (excluding buttons within)
-                    card.addEventListener('click', (e) => {
-                        // Ensure click isn't on a button or an element that should not trigger toggle
-                        if (!e.target.closest('.toggle-details') && !e.target.closest('.methodology-button')) { 
-                            card.classList.toggle('expanded');
-                            const isExpanded = card.classList.contains('expanded');
-                            toggleButton.textContent = isExpanded ? 'Hide Details' : initialButtonText;
-                            details.style.maxHeight = isExpanded ? details.scrollHeight + 'px' : '0';
-                        }
-                    });
-                }
+                    }
+                });
             });
 
 
-            // Methodology Toggle for Competencies Section
+            // Methodology Toggle for Competencies Section (internal to Methodologies card)
             const btnAgileComp = document.getElementById('btn-agile-comp');
             const btnWaterfallComp = document.getElementById('btn-waterfall-comp');
-            const btnDevOpsComp = document = document.getElementById('btn-devops-comp');
+            const btnDevOpsComp = document.getElementById('btn-devops-comp');
             const btnLeanComp = document.getElementById('btn-lean-comp');
             const methodologyCompContent = document.getElementById('methodology-comp-content');
 
             const methodologyData = {
                 agile: {
                     text: "Skilled in applying iterative and collaborative approaches, including Scrum boards, Kanban boards, Backlog Management, and Sprint Planning.",
-                    visual: "🔄<span>Iterative & Flexible</span>"
+                    visual: "🚀<span>Iterative & Flexible</span>"
                 },
                 waterfall: {
                     text: "Proficient in traditional Waterfall methodology, managing all phases sequentially: Requirements, Design, Development, Testing, Implementation, and Maintenance.",
                     visual: "🪜<span>Sequential & Structured</span>"
                 },
                 devops: {
-                    text: "Experienced in DevOps principles, including Continuous Integration/Continuous Delivery (CI/CD), version control, continuous monitoring, and feedback loops for rapid deployment and operational excellence.",
+                    text: "Experienced in DevOps principles, including Continuous Integration/Continuous Delivery (CI/CD), version control, continuous monitoring, and feedback loops for rapid deployment and operational excellence, including streamlining operational workflows.",
                     visual: "🔗<span>Automated & Integrated</span>"
                 },
                 lean: {
@@ -493,76 +610,39 @@
                 });
                 // Set active button style
                 document.getElementById('btn-' + method + '-comp').classList.add('bg-teal-600', 'text-white');
-                document.getElementById('btn-' + method + '-comp').classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-300');
             }
 
-            btnAgileComp.addEventListener('click', () => updateMethodologyContent('agile'));
-            btnWaterfallComp.addEventListener('click', () => updateMethodologyContent('waterfall'));
-            btnDevOpsComp.addEventListener('click', () => updateMethodologyContent('devops'));
-            btnLeanComp.addEventListener('click', () => updateMethodologyContent('lean'));
-            
-            // Initialize methodology content
-            updateMethodologyContent('agile');
+            // Attach event listeners for methodology buttons
+            if (btnAgileComp) btnAgileComp.addEventListener('click', () => updateMethodologyContent('agile'));
+            if (btnWaterfallComp) btnWaterfallComp.addEventListener('click', () => updateMethodologyContent('waterfall'));
+            if (btnDevOpsComp) btnDevOpsComp.addEventListener('click', () => updateMethodologyContent('devops'));
+            if (btnLeanComp) btnLeanComp.addEventListener('click', () => updateMethodologyContent('lean'));
 
 
-            // Professional Experience Timeline & Details
-            const companyItems = document.querySelectorAll('.timeline-item');
-            const experienceContents = document.querySelectorAll('.experience-detail-content');
+            // Experience Timeline Logic
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const experienceDetailContents = document.querySelectorAll('.experience-detail-content');
 
-            function showExperience(companyId) {
-                companyItems.forEach(item => item.classList.remove('active'));
-                document.getElementById('company-' + companyId).classList.add('active');
-
-                experienceContents.forEach(content => content.classList.remove('active'));
-                document.getElementById('experience-' + companyId).classList.add('active');
-            }
-
-            companyItems.forEach(item => {
+            timelineItems.forEach(item => {
                 item.addEventListener('click', () => {
-                    const companyId = item.getAttribute('data-company');
-                    showExperience(companyId);
+                    const company = item.dataset.company;
+
+                    // Remove active class from all timeline items
+                    timelineItems.forEach(timelineItem => timelineItem.classList.remove('active'));
+                    // Add active class to the clicked timeline item
+                    item.classList.add('active');
+
+                    // Hide all detail contents
+                    experienceDetailContents.forEach(content => content.classList.remove('active'));
+                    // Show the selected detail content
+                    document.getElementById('experience-' + company + '-content').classList.add('active'); // Added '-content' to match HTML IDs
                 });
             });
 
-            // Set initial active experience
-            showExperience('dkg');
-
-
-            // Smooth Scrolling & Active Nav Link Highlighting
-            const sections = document.querySelectorAll('.content-section');
-            const navLinks = document.querySelectorAll('.nav-link');
-            
-            window.addEventListener('scroll', () => {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (pageYOffset >= sectionTop - 100) {
-                        current = section.getAttribute('id');
-                    }
-                });
-
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href').substring(1) === current) {
-                        link.classList.add('active');
-                    }
-                });
-            });
-            
-            navLinks.forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-                // Add initial active state for first section on load
-                if (anchor.getAttribute('href') === '#overview') {
-                    anchor.classList.add('active');
-                }
-            });
-
+            // Initialize timeline to show DKG content on load
+            document.getElementById('company-dkg').click();
         });
     </script>
+
 </body>
 </html>
